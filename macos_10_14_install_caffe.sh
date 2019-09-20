@@ -41,3 +41,12 @@ cp ${shelldir}/Makefile.config Makefile.config
 make -j 8
 make py
 make distribute
+
+
+cp -r distribute/python/caffe ${ANACONDA_PREFIX}/lib/python2.7/site-packages/
+cp -r distirbute/lib/libcaffe* ${ANACONDA_PREFIX}/lib
+
+# need protobuf in conda env py27
+conda install protobuf
+
+python -c 'import caffe'

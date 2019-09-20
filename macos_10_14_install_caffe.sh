@@ -1,7 +1,13 @@
 
 # prerequisites
 # brew, commandlinetools, anaconda
+# 1. 遇到veclib找不到的问题
+#    答：没有把默认的atlas改成openblas
+# 2. 遇到pyconfig.h找不到的问题
+#    答：没有uncoment .../include/python/include这一行
 
+
+shelldir=''
 
 conda create --name py27 python=2.7 jupyter numpy scipy scikit-image
 conda activate py27
@@ -9,7 +15,7 @@ conda activate py27
 
 
 brew install wget
-# levveldb 没有用在这个编译中，因为需要c++11特性
+# levveldb 没有用在这个编译中，因为需要c++11特性, 在Makefile.config中去掉了
 brew install -vd snappy leveldb gflags glog szip lmdb
 brew install openblas
 brew install hdf5 opencv
@@ -30,5 +36,8 @@ make install
 cd ~/Downloads
 git clone https://github.com/BVLC/caffe.git
 cd caffe
-cp Makefile.config.example Makefile.config
+cp ${shelldir}/Makefile.config Makefile.config
 
+make -j 8
+make py
+make distribute

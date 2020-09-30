@@ -1,5 +1,5 @@
 # 学习markdonw
-
+这篇tutorial是完全按照[这个页面](https://www.markdowntutorial.com/lesson/1/)一步一步操作的。简单清晰。
 # 换行
 两次回车
 
@@ -26,7 +26,7 @@ And now back to [the first link][another place].
 [another-link]: www.google.com
 
 # link image
-这篇tutorial是完全按照[这个页面](https://www.markdowntutorial.com/lesson/1/)一步一步操作的。简单清晰。
+
 
 ## inline image link
 ![A pretty tiger](https://upload.wikimedia.org/wikipedia/commons/5/56/Tiger.50.jpg)

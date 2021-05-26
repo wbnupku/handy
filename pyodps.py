@@ -1,4 +1,4 @@
-// milisecond转化为age
+# milisecond转化为age
 def milisecond2age(t, ds):
     if t is None:
         return None
@@ -11,7 +11,7 @@ def milisecond2age(t, ds):
         return age
       
  
-// milisecond转化为datatime
+# milisecond转化为datatime
 def milisecond2ds(t, format='%Y%m%d'):
     if t is None:
         return None

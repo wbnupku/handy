@@ -30,7 +30,16 @@ bst.save_model('model.txt', num_iteration=bst.best_iteration)
 
 
 # 输出指标和画图
+import matplotlib.pyplot as plt
+from sklearn.metrics import precision_recall_curve
+
 y_pred = bst.predict(X_test)
+
+# pr曲线
+prec, recall, threshs = precision_recall_curve(y_test, y_pred)
+plt.plot(recall, prec)
+
+# roc曲线
 from sklearn import metrics
 fpr, tpr, thresholds =  metrics.roc_curve(y_test, y_pred)
 print('auc:', metrics.auc(fpr, tpr))

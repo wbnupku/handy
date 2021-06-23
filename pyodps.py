@@ -39,3 +39,9 @@ def get_max_ds_pt(tbl_name, ignore_substr='.done'):
     print(dslist)
     max_ds = max(dslist)
     return max_ds
+
+def ds_plus_n(ds, n):
+    """获取ds + n days."""
+    from datetime import timedelta
+    dt = datetime.strptime(ds, '%Y%m%d') + timedelta(days=n)
+    return dt.strftime('%Y%m%d')

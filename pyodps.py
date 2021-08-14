@@ -26,6 +26,17 @@ def show_pts(tbl_name):
 
         
 def get_max_ds_pt(tbl_name, ignore_substr='.done'):
+    """
+    Get max ds of odps table.
+    Parameters:
+        tbl_name: str
+            name of odps table.
+        ignore_substr: str, default: '.done'
+            omit the partition if the name contains 'ignore_substr'
+    Return:
+        max_ds: str
+            ds value of the partition with max ds. 
+    """
     tbl = o.get_table(tbl_name)
     def get_ds(pt_name):
         items = pt_name.split(',')
@@ -36,7 +47,6 @@ def get_max_ds_pt(tbl_name, ignore_substr='.done'):
     dslist = [get_ds(pt.name) for pt in tbl.iterate_partitions()]
 
     dslist = [ds for ds in dslist if ds is not None and len(ds) == 8]
-    print(dslist)
     max_ds = max(dslist)
     return max_ds
 
@@ -45,3 +55,12 @@ def ds_plus_n(ds, n):
     from datetime import timedelta
     dt = datetime.strptime(ds, '%Y%m%d') + timedelta(days=n)
     return dt.strftime('%Y%m%d')
+
+def create_table_example():
+    from odps.models import Schema, Column, Partition
+    columns = [Column(name='num', type='bigint', comment='the column'),
+               Column(name='num2', type='double', comment='the column2')]
+    partitions = [Partition(name='pt', type='string', comment='the partition')]
+    schema = Schema(columns=columns, partitions=partitions)
+    table = o.create_table('my_new_table', schema, if_not_exists=True, lifecycle=7)
+

@@ -66,3 +66,11 @@ I read this interesting quote the other day:
 用到·我尝试了但没有成功
 
 回车
+
+# 公式
+
+individual lines
+
+$$
+l \; (i, j) = -\log \frac{\exp (\;\text{sim}(z_i, z_j)\; / \;\tau) }{\sum_{k=1}^{2N} \mathbb{1}_{k \neq i} \exp (\;\text{sim} (z_i, z_k) \;/ \;\tau) }
+$$

@@ -64,3 +64,59 @@ def create_table_example():
     schema = Schema(columns=columns, partitions=partitions)
     table = o.create_table('my_new_table', schema, if_not_exists=True, lifecycle=7)
 
+def distinct_by_cols(df, on, keep='first', keep_on=None):
+    names = df.schema.names
+    types = df.schema.types
+
+    if keep_on is None:
+        keep_on = on
+
+    def dedup(keys):
+
+        def h(row, done):
+            if done:
+                yield row
+        return h
+    
+    def dedup_and_leave_max(keys):
+        buf = [None]
+
+        def h(row, done):
+            if buf[0] is None:
+                buf[0] = row
+            elif getattr(row, keep_on) > getattr(buf[0], keep_on):
+                buf[0] = row
+            if done:
+                if buf[0] is not None:
+                    yield buf[0]
+                buf[0] = None
+        return h
+    def dedup_and_leave_min(keys):
+        buf = [None]
+
+        def h(row, done):
+            if buf[0] is None:
+                buf[0] = row
+            elif getattr(row, keep_on) < getattr(buf[0], keep_on):
+                buf[0] = row
+            if done:
+                if buf[0] is not None:
+                    yield buf[0]
+                buf[0] = None
+        return h
+    
+    if keep == 'max':
+        return df.map_reduce(group=on,
+                             reducer=dedup_and_leave_max,
+                             reducer_output_names=names,
+                             reducer_output_types=types)
+    elif keep == 'min':
+        return df.map_reduce(group=on,
+                             reducer=dedup_and_leave_min,
+                             reducer_output_names=names,
+                             reducer_output_types=types)
+
+    return df.map_reduce(group=on,
+                         reducer=dedup,
+                         reducer_output_names=names,
+                         reducer_output_types=types)

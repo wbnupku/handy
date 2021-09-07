@@ -120,3 +120,35 @@ def distinct_by_cols(df, on, keep='first', keep_on=None):
                          reducer=dedup,
                          reducer_output_names=names,
                          reducer_output_types=types)
+
+
+""""
+resource manipulation
+"""
+def get_file_from_resource(resource_path, local_file, o=None):
+    if o is None:
+        o = odps.from_global()
+    if not o.exist_resource(resource_path):
+        print('resource not exist')
+        return None
+    res = o.get_resource(resource_path)
+    
+    data = res.open('rb').read()
+
+    with open(local_file, 'wb') as fout:
+        fout.write(data)
+    print('get_resource {} done'.format(resource_path))
+    
+def copy_file_to_resource(local_file, resource_path, resource_type, overwritten, o=None):
+    """Copy local file as odps resource."""
+    from odps import ODPS
+    if o is None:
+        o = ODPS.from_global()
+    if overwritten and o.exist_resource(resource_path):
+        o.delete_resource(resource_path)
+    if isinstance(local_file, str) or isinstance(local_file, Text):
+        fobj = open(local_file, 'rb')
+    else:
+        fobj = local_file
+    return o.create_resource(resource_path, resource_type, file_obj=fobj)
+

@@ -68,8 +68,11 @@ def distinct_by_cols(df, on, keep='first', keep_on=None):
     names = df.schema.names
     types = df.schema.types
 
+    if isinstance(on, 'str'):
+        on = [on]
+      
     if keep_on is None:
-        keep_on = on
+        return df[on].distinct()
 
     def dedup(keys):
 

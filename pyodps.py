@@ -125,6 +125,16 @@ def distinct_by_cols(df, on, keep='first', keep_on=None):
                          reducer_output_types=types)
 
 
+
+
+def exec_sql(sql):
+    """#调用 pyodps 执行odps sql 参考 pyodps 文档 https://pyodps.readthedocs.io/zh_CN/latest/"""
+    print('====> execute_sql: ' + sql)
+    instance = o.run_sql(sql)
+    print('====> logview: ' + instance.get_logview_address())
+    instance.wait_for_success()
+    
+    
 """"
 resource manipulation
 """

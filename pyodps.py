@@ -68,17 +68,24 @@ def distinct_by_cols(df, on, keep='first', keep_on=None):
     names = df.schema.names
     types = df.schema.types
 
-    if isinstance(on, 'str'):
-        on = [on]
-      
     if keep_on is None:
-        return df[on].distinct()
+        keep_on = on
 
-    def dedup(keys):
+    def dedup_and_leave_last(keys):
 
         def h(row, done):
             if done:
                 yield row
+        return h
+    
+    def dedup_and_leave_first(keys):
+        rows = [[]]
+        def h(row, done):
+            if not rows:
+                rows[0].append(row)
+            if done:
+                yield row
+                rows[0] = []
         return h
     
     def dedup_and_leave_max(keys):
@@ -118,13 +125,30 @@ def distinct_by_cols(df, on, keep='first', keep_on=None):
                              reducer=dedup_and_leave_min,
                              reducer_output_names=names,
                              reducer_output_types=types)
-
-    return df.map_reduce(group=on,
-                         reducer=dedup,
+    elif keep == 'first':
+        return df.map_reduce(group=on,
+                         reducer=dedup_and_leave_first,
                          reducer_output_names=names,
                          reducer_output_types=types)
+    else:
+        return df.map_reduce(group=on,
+                             reducer=dedup_and_leave_last,
+                             reducer_output_names=names,
+                             reducer_output_types=types)
 
-
+def keep_unique(df, on):
+    """ONLY keep unique rows."""
+    gdf = df.groupby(on).agg(c=df.count())
+    return df.join(gdf[gdf.c == 1].exclude('c'), on=on)
+        
+    
+def df_diff(df1, df2, on):
+    if isinstance(on, (list, tuple)):
+        select_cols = on
+    else:
+        select_cols = [on]
+    df = df1.left_join(df2[df2[select_cols], Scalar(1, 'int').rename('_df_diff_flag_')].distinct(), on=on, merge_columns=True)
+    return df[df._df_diff_flag_.isnull()].exclude('_df_diff_flag_')
 
 
 def exec_sql(sql):

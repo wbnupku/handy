@@ -158,6 +158,36 @@ def exec_sql(sql):
     print('====> logview: ' + instance.get_logview_address())
     instance.wait_for_success()
     
+def spid_decoder(sp_id, tag, is_show):
+    """Convert from sp_id to show_id or vdo_id.
+    
+    Parameters:
+    -----------
+    sp_id: int, unified id for all data.
+    tag: int, 1 for show_id, 2 for vdo_id.
+    is_show: int, 1 for show and other value for vdo not show.
+    
+    Return:
+    -----------
+    docoded_id: show_id or vdo_id.
+    """
+    if sp_id is None:
+        return 0
+    # tag=1 to decode show_id from ID_Encoder(1,show_id,0) (type<<60 | sl_id << 32 | vid)
+    if tag==1 and is_show == 1:
+        return (sp_id - (1<<60)) >> 32
+    elif tag==1 and is_show !=1:
+        # for vdo , product 0
+        return 0
+    # tag=2 to decode vdo_id from ID_Encoder(3,0,vdo_id) or ID_Encoder(4,plylst_id,vdo_id)
+    # (type<<60 | sl_id << 32 | vid)
+    elif tag != 1 and is_show == 1:
+        return 0
+    elif tag != 1 and is_show != 1:
+        return sp_id & 0xFFFFFFFF
+    else:
+        return 0
+    
     
 """"
 resource manipulation

@@ -1,0 +1,6 @@
+# /bin/bash
+
+# put into the /usr/local/bin or any PATH that will be automatically found
+#   After create the script file, run
+#    sudo chmod +x /usr/local/bin/pw
+echo 'xxxx' | xsel --clipboard
